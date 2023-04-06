@@ -1,10 +1,7 @@
 from flet import *
-from revChatGPT.V1 import Chatbot
+from revChatGPT.V3 import Chatbot
 
-chatbot = Chatbot(config={
-  "email": "zxnixis@gmail.com",
-  "password": "sx051001"
-})
+chatbot = Chatbot(api_key="")
 
 class Message():
     def __init__(self, user_name, text, completion):

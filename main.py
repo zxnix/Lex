@@ -1,6 +1,8 @@
 from sidebar import *
 from monitor import *
 from chat_page import *
+from calendar_page import *
+
 
 def main(page: Page):
     page.window_title_bar_hidden = True
@@ -24,42 +26,71 @@ def main(page: Page):
         monitor_disk.update_information(e)
         monitor_memory.update_information(e)
 
+    # def send_message_click(e):
+    #     if new_message.value != "":
+    #         message = Message("Z", new_message.value, "hello")
+    #         m = UsrMessage(message)
+    #         if len(new_message.value) > 55:
+    #             m.controls[1].controls[0].width = 10000
+    #         chat.controls.append(m)
+    #         completion = new_message.value
+    #         new_message.value = ""
+    #         new_message.focus()
+    #         chat.auto_scroll = True
+    #         chat.update()
+    #         prev_text = ""
+    #         prompt = completion
+    #         message.completion = prev_text
+    #         GPT = GPTMessage(message)
+    #         chat.controls.append(GPT)
+    #         chat.update()
+    #         flag = False
+    #         for data in chatbot.ask_stream(prompt):
+    #             chat.update()
+    #             completion = data["message"][len(prev_text) :]
+    #             prev_text = data["message"]
+    #             if len(prev_text) > 65 and flag == False:
+    #                 flag = True
+    #                 GPT.controls[1].width = 450
+    #                 GPT.controls[1].update()
+    #             message.completion = completion
+    #             GPT.controls[1].content.value = prev_text
+    #             chat.auto_scroll = True
+    #             GPT.controls[1].update()
+    #             chat.update()
+    #             chat.auto_scroll = False
+    #             page.update()
 
     def send_message_click(e):
         if new_message.value != "":
             message = Message("Z", new_message.value, "hello")
             m = UsrMessage(message)
-            if len(new_message.value) > 65:
-                m.controls[1].controls[0].width = 450
+            if len(new_message.value) > 55:
+                m.controls[1].controls[0].width = 10000
             chat.controls.append(m)
-            completion = new_message.value
+            prompt = new_message.value
             new_message.value = ""
             new_message.focus()
             chat.auto_scroll = True
             chat.update()
-            prev_text = ""
-            prompt = completion
-            message.completion = prev_text
+            message.completion = ""
             GPT = GPTMessage(message)
             chat.controls.append(GPT)
             chat.update()
             flag = False
-            for data in chatbot.ask(prompt):
+            for data in chatbot.ask_stream(prompt):
                 chat.update()
-                completion = data["message"][len(prev_text) :]
-                prev_text = data["message"]
-                if len(prev_text) > 65 and flag == False:
+                message.completion = message.completion + data
+                if len(message.completion) > 65 and flag == False:
                     flag = True
                     GPT.controls[1].width = 450
                     GPT.controls[1].update()
-                message.completion = completion
-                GPT.controls[1].content.value = prev_text
+                GPT.controls[1].content.value = message.completion
                 chat.auto_scroll = True
                 GPT.controls[1].update()
                 chat.update()
                 chat.auto_scroll = False
                 page.update()
-
 
     new_message.on_submit = send_message_click
 
@@ -111,10 +142,9 @@ def main(page: Page):
             )
         ),
     )
-    
 
     page2 = Container(
-        #margin=10,
+        # margin=10,
         alignment=alignment.center,
         offset=transform.Offset(0, 0),
         animate_opacity=animation.Animation(
@@ -132,7 +162,7 @@ def main(page: Page):
                 ),
                 Container(
                     padding=padding.only(bottom=10, left=10, right=10),
-                    alignment = alignment.center,
+                    alignment=alignment.center,
                     content=Container(
                         border_radius=10,
                         bgcolor='#ffffff',
@@ -148,6 +178,9 @@ def main(page: Page):
         )
     )
 
+    calendar = SetCalendar()
+    date = DateSetUp(calendar)
+
     page3 = Container(
         alignment=alignment.center,
         offset=transform.Offset(0, 0),
@@ -155,7 +188,7 @@ def main(page: Page):
             duration=500, curve=AnimationCurve.DECELERATE,
         ),
         bgcolor='#ffffff',
-        content=Text('PAGE 3', size=50, color='white')
+        content=date,
     )
 
     page4 = Container(
@@ -164,12 +197,8 @@ def main(page: Page):
         animate_opacity=animation.Animation(
             duration=500, curve=AnimationCurve.DECELERATE,
         ),
-        gradient=LinearGradient(
-            begin=alignment.top_left,
-            end=alignment.bottom_right,
-            colors=["#C49EA0", "#AC8AAC"],
-        ),
-        content=Text('PAGE 4', size=50)
+        bgcolor='#ffffff',
+        content=Text('Welcome To You', size=50, italic=True, font_family="DankMono Nerd Font")
     )
 
     sidebar = ModernNavBar(page, page1, page2, page3, page4)
